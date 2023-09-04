@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "effect": [
+        "./effect"
+      ]
+    }
+  },
+}
