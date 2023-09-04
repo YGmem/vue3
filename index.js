@@ -1,5 +1,4 @@
-
-import proxyObjFn from './proxy/index.js'
+import reactive from './reactive/index.js'
 
 /* 测试使用 */
 import scheduler from './test/scheduler.js'
@@ -17,8 +16,7 @@ let obj = {
 }
 
 
-let proxyObj = proxyObjFn(obj)
-
+let proxyObj = reactive(obj)
 
 
 /* 调度器 只会执行一次 */
@@ -34,5 +32,4 @@ let proxyObj = proxyObjFn(obj)
 // watch(proxyObj)
 
 /* effect */
-
 effectTest(proxyObj)
