@@ -22,14 +22,21 @@ function get(target, key, receiver) {
 // 拦截设置操作
 function set(target, key, newVal, receiver) {
 
+  // 获取旧值
+  let oldVal = target[key]
+
   // 如果不是自身的属性 表示为添加操作
   let type = Object.prototype.hasOwnProperty.call(target, key) ? ProxyType.SET : ProxyType.ADD
 
   // 执行设置操作
   let res = Reflect.set(target, key, newVal, receiver)
 
-  // 把副作用函数从桶里取出并执行
-  trigger(target, key, type)
+  // 只有当不相等才会执行  后面的全等是防止NaN的情况 因为两个NaN不可能全等
+  if (oldVal !== newVal && (oldVal === newVal || newVal === oldVal)) {
+    // 把副作用函数从桶里取出并执行
+    trigger(target, key, type)
+  }
+
   return res
 }
 

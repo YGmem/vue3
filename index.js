@@ -6,6 +6,7 @@ import computed from './test/computed.js'
 import cleanup from './test/cleanup.js'
 import watch from './test/watch.js'
 import effectTest from './test/effectTest.js'
+import reactiveText from './test/reactive.text.js'
 
 let obj = {
   name: '阳光',
@@ -32,4 +33,8 @@ let proxyObj = reactive(obj)
 // watch(proxyObj)
 
 /* effect */
-effectTest(proxyObj)
+// effectTest(proxyObj)
+
+
+/* reactiveText */
+reactiveText()
