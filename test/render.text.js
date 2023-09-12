@@ -9,6 +9,8 @@ const vnode = {
   children: '测试render函数按钮' // 从 click me 改成 click again
 }
 
+11111111111111111111111111111111
+
 // MyComponent 是一个对象
 const MyComponent = {
   render() {
