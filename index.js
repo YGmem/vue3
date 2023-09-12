@@ -1,4 +1,4 @@
-import reactive from './reactive/index.js'
+import {reactive} from './reactive/index.js'
 
 /* 测试使用 */
 import scheduler from './test/scheduler.js'

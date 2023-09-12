@@ -9,7 +9,7 @@
 3. 监听 [watch](./watch/index.js)
 4. 代理 [proxy](./computed/index.js)
 5. 对已写代码的测试 [test](./test)
-6. reactive实现 [reactive](./reactive/index.js)
+6. reactive,shallowReactive,readonly实现 [reactive](./reactive/index.js)
 
 ​	
 

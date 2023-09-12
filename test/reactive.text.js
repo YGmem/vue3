@@ -1,20 +1,47 @@
-import reactive from "../reactive/index.js"
+import { reactive, shallowReactive, readonly } from "../reactive/index.js"
 import { effect } from "../effect/index.js"
 
 export default function () {
-  let a = {}
-  let b = { bar: 1 }
 
-  let proxyA = reactive(a)
-  let proxyB = reactive(b)
+  let obj = {}
+  let proto = { bar: 1, obj2: { name: "阳光" } }
 
-  Object.getPrototypeOf(a, b)
+  // 防止原型更新
+  // let child = reactive(obj)
+  // let parent = reactive(proto)
+
+  // Object.setPrototypeOf(child, parent)
+
+  // effect(() => {
+  //   console.log(child.bar)
+  // })
+
+  // child.bar = 2
+
+
+  // 深响应 和 浅响应
+  // let pObj = reactive(proto)
+  // let sObj = shallowReactive(proto)
+
+  // debugger
+  // effect(() => {
+  //   // console.log(pObj.obj2.name)
+  //   console.log(sObj.obj2.name);
+  // })
+
+
+  // sObj.obj2.name = "阳光2"
+
+
+  // 只读
+  let pObj = readonly(proto)
 
   effect(() => {
-    console.log(proxyA.bar)
+    // console.log(pObj.bar);
+    console.log(pObj.obj2);
   })
 
-  proxyA.bar = 2
+  pObj.obj2 = 1
 
 }
 

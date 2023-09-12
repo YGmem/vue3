@@ -1,10 +1,10 @@
-const ProxyType = {
+export const ProxyType = {
   DELETE: 'delete',
   ADD: 'add',
   SET: 'set'
 }
 
 
-export  {
-  ProxyType
+export const ReactiveFlags = {
+  RAW: '__v_raw'
 }
