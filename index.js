@@ -1,12 +1,14 @@
-import {reactive} from './reactive/index.js'
+import { reactive } from './reactive/index.js'
 
 /* 测试使用 */
+import './test/render.text.js' // render 函数使用
 import scheduler from './test/scheduler.js'
 import computed from './test/computed.js'
 import cleanup from './test/cleanup.js'
 import watch from './test/watch.js'
 import effectTest from './test/effectTest.js'
 import reactiveText from './test/reactive.text.js'
+
 
 let obj = {
   name: '阳光',
@@ -18,7 +20,6 @@ let obj = {
 
 
 let proxyObj = reactive(obj)
-
 
 /* 调度器 只会执行一次 */
 // scheduler(proxyObj)
