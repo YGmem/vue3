@@ -1,4 +1,4 @@
-import { effect } from '../effect/index.js'
+import { effect } from '../reactivity/effect.js'
 export default function (proxyObj) {
 
   /* 调度器  只会执行一次*/
@@ -35,6 +35,9 @@ export default function (proxyObj) {
     }
   })
 
+  proxyObj.age = 1
+  proxyObj.age = 2
+  proxyObj.age = 3  // 只触发最后一次
 
 }
 

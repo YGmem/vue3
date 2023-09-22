@@ -1,5 +1,5 @@
-import { computed } from '../computed/index.js'
-import { effect } from '../effect/index.js'
+import { computed } from '../reactivity/computed.js'
+import { effect } from '../reactivity/effect.js'
 
 export default function (proxyObj) {
 
@@ -7,7 +7,7 @@ export default function (proxyObj) {
     // console.log(proxyObj.age)
     return proxyObj.age
   })
-
+  // 如果副作用
   effect(() => {
     console.log(a.value)
   })

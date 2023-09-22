@@ -2,7 +2,7 @@ import {
   mutableHandlers,
   shallowReactiveHandlers,
   readonlyHandlers
-} from "../proxy/index.js"
+} from "./proxy.js"
 
 export function reactive(obj) {
   return createReactive(obj, mutableHandlers)

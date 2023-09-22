@@ -1,4 +1,4 @@
-import { reactive } from './reactive/index.js'
+import { reactive } from './reactivity/reactive.js'
 
 /* 测试使用 */
 import './test/render.text.js' // render 函数使用
@@ -15,7 +15,8 @@ let obj = {
   age: 20,
   get fn() {
     return this.age
-  }
+  },
+  arr: [1, 2, 3]
 }
 
 
@@ -34,8 +35,8 @@ let proxyObj = reactive(obj)
 // watch(proxyObj)
 
 /* effect */
-// effectTest(proxyObj)
+effectTest()
 
 
 /* reactiveText */
-reactiveText()
+// reactiveText()

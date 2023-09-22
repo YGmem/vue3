@@ -3,9 +3,9 @@ import {
   trigger,
   effect,
   ITERATE_KEY
-} from '../effect/index.js'
+} from './effect.js'
 import { extend } from '../utils/utils.js'
-import { reactive, readonly } from '../reactive/index.js'
+import { reactive, readonly } from './reactive.js'
 import { ProxyType, ReactiveFlags } from '../operations/index.js'
 
 let get = createGetter()
@@ -57,7 +57,9 @@ function createSetter(isReadonly = false) {
     let oldVal = target[key]
 
     // 如果不是自身的属性 表示为添加操作
-    let type = Object.prototype.hasOwnProperty.call(target, key) ? ProxyType.SET : ProxyType.ADD
+    // 如果是数组 且设置的key 的长度小于数组的长度，表示SET操作，否则为 ADD
+    let type = Array.isArray(target) ? Number(key) < target.length ? ProxyType.SET : ProxyType.ADD :
+      Object.prototype.hasOwnProperty.call(target, key) ? ProxyType.SET : ProxyType.ADD
 
     // 执行设置操作
     let res = Reflect.set(target, key, newVal, receiver)
@@ -67,7 +69,7 @@ function createSetter(isReadonly = false) {
       // 只有当不相等才会执行  后面的全等是防止NaN的情况 因为两个NaN不可能全等
       if (oldVal !== newVal && (oldVal === oldVal || newVal === newVal)) {
         // 把副作用函数从桶里取出并执行
-        trigger(target, key, type)
+        trigger(target, key, type,newVal)
       }
     }
 

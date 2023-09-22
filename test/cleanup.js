@@ -1,4 +1,4 @@
-import { effect } from "../effect/index.js"
+import { effect } from "../reactivity/effect.js"
 
 export default function (proxyObj) {
   effect(function effectFn() {

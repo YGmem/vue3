@@ -1,4 +1,4 @@
-import watch from "../watch/index.js"
+import watch from "../reactivity/watch.js"
 
 export default function (proxyObj) {
 

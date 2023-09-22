@@ -1,5 +1,5 @@
-import { reactive, shallowReactive, readonly } from "../reactive/index.js"
-import { effect } from "../effect/index.js"
+import { reactive, shallowReactive, readonly } from "../reactivity/reactive.js"
+import { effect } from "../reactivity/effect.js"
 
 export default function () {
 
@@ -38,7 +38,7 @@ export default function () {
 
   effect(() => {
     // console.log(pObj.bar);
-    console.log(pObj.obj2);
+    console.log(pObj.obj2)
   })
 
   pObj.obj2 = 1

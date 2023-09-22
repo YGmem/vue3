@@ -1,4 +1,4 @@
-import { effect } from "../effect/index.js"
+import { effect } from "./effect.js"
 
 export default function watch(source, cb, options = {}) {
 
@@ -17,10 +17,11 @@ export default function watch(source, cb, options = {}) {
   // cleanup 用来存储用户注册的过期回调
   let cleanup
 
+  // 用户上一次watch触发的回调函数
   function onInvalidate(fn) {
     // 将过期回调存储到 cleanup 中
     cleanup = fn
-  } 
+  }
 
   // 提取 scheduler 调度函数为一个独立的 job 函数
   let job = () => {
@@ -30,7 +31,7 @@ export default function watch(source, cb, options = {}) {
       cleanup()
     }
     // 将旧值和新值作为回调函数的参数 onInvalidate 作为回调函数的第三个参数，以便用户使用
-    cb(newValue, oldValue,onInvalidate)
+    cb(newValue, oldValue, onInvalidate)
     // 更新旧值，不然下一次会得到错误的旧值
     oldValue = newValue
   }

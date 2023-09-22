@@ -1,6 +1,5 @@
 import { renderer } from "../renderer/index.js"
 
-debugger
 const vnode = {
   tag: 'div',
   props: {
