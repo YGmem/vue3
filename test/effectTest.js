@@ -58,14 +58,17 @@ export default function () {
 
 
   /* 数组设置length 超出或等于length的值被删除，需要响应 */
-  effect(() => {
-    console.log(proxyObj.arr[0]) // 不触发
-  })
+  // effect(() => {
+  //   console.log(proxyObj.arr[0]) // 不触发
+  // })
 
-  effect(() => {
-    console.log(proxyObj.arr[2])  // 被删除触发响应
-  })
+  // effect(() => {
+  //   console.log(proxyObj.arr[2])  // 被删除触发响应
+  // })
 
-  proxyObj.arr.length = 2 
+  // proxyObj.arr.length = 2 
+
+  /*  */
+
 
 }

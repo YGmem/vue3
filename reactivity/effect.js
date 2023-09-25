@@ -61,6 +61,7 @@ export function trigger(target, key, type, newVal) {
     })
   }
 
+  /* 如果为数组且修改的字段为length 则大于等于length的会被删除 将删除的添加响应列表 */
   if (Array.isArray(target) && key === 'length') {
     depsMap && depsMap.forEach((effects, index) => {
       if (index >= newVal) {

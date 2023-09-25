@@ -69,7 +69,7 @@ function createSetter(isReadonly = false) {
       // 只有当不相等才会执行  后面的全等是防止NaN的情况 因为两个NaN不可能全等
       if (oldVal !== newVal && (oldVal === oldVal || newVal === newVal)) {
         // 把副作用函数从桶里取出并执行
-        trigger(target, key, type,newVal)
+        trigger(target, key, type, newVal)
       }
     }
 
@@ -91,7 +91,8 @@ function has(target, key) {
 
 // 拦截 for in 的读取操作 原理是for in 会调用 Reflect.ownKeys 操作
 function ownKeys(target) {
-  track(target, ITERATE_KEY)
+  /* 判断是否为数组如果是数组使用length 添加依赖响应 否则为对象使用 ITERATE_KEY*/
+  track(target, Array.isArray(target) ? 'length' : ITERATE_KEY)
   return Reflect.ownKeys(target)
 }
 
