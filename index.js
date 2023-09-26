@@ -35,8 +35,8 @@ let proxyObj = reactive(obj)
 // watch(proxyObj)
 
 /* effect */
-effectTest()
+// effectTest()
 
 
 /* reactiveText */
-// reactiveText()
+reactiveText()

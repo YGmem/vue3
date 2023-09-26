@@ -6,5 +6,5 @@ export const ProxyType = {
 
 
 export const ReactiveFlags = {
-  RAW: '__v_raw'
+  RAW: '__v_raw'  // 访问代理的原始代理值
 }

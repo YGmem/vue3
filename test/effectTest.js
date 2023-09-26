@@ -68,7 +68,27 @@ export default function () {
 
   // proxyObj.arr.length = 2 
 
-  /*  */
+  /* 数组 in的响应  in 如果改变长度触发 of 已经实现*/
+  // effect(() => {
+  //   for (const key in proxyObj.arr) {
+  //     if (Object.hasOwnProperty.call(proxyObj.arr, key)) {
+  //       console.log(key)
+  //     }
+  //   }
+  // })
+  // proxyObj.arr[3] = 1 // 可以触发
+  // proxyObj.arr.length = 2 // 也可以
+
+  /* 数组 of 的响应  */
+  // effect(() => {
+  //   for (const iterator of proxyObj.arr) {
+  //     console.log(iterator)
+  //   }
+  // })
+
+  // proxyObj.arr[3] = 1 // 可以触发
+  // proxyObj.arr.length = 2 // 也可以
+ 
 
 
 }

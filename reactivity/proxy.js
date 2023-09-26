@@ -7,6 +7,7 @@ import {
 import { extend } from '../utils/utils.js'
 import { reactive, readonly } from './reactive.js'
 import { ProxyType, ReactiveFlags } from '../operations/index.js'
+import { arrayInstrumentations } from './rewriteArray.js'
 
 let get = createGetter()
 let shallowGet = createGetter(true, false)
@@ -14,6 +15,7 @@ let readonlyGet = createGetter(false, true)
 let set = createSetter()
 
 function createGetter(isShallow = false, isReadonly = false) {
+  /* 参数为 对象 key值 当前改变的对象 */
   return function get(target, key, receiver) {
 
     // 代理对象可以通过 raw 属性访问原始数据
@@ -21,8 +23,14 @@ function createGetter(isShallow = false, isReadonly = false) {
       return target
     }
 
-    // 非只读才添加副作用
-    if (!isReadonly) {
+    /* 如果为数组且key为arrayInstrumentations里的重写的数组方法之一返回这个重写的数组方法 */
+    if (Array.isArray(target) && arrayInstrumentations.hasOwnProperty(key)) {
+      return Reflect.get(arrayInstrumentations, key, receiver)
+    }
+
+    // 1 非只读才添加副作用 
+    // 2 如果为symbol 表示读取的是迭代器考虑性能问题不建立响应
+    if (!isReadonly && typeof key !== 'symbol') {
       // 将副作用函数 activeEffect 添加到存储副作用函数的桶中
       track(target, key)
     }
