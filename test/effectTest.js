@@ -88,7 +88,20 @@ export default function () {
 
   // proxyObj.arr[3] = 1 // 可以触发
   // proxyObj.arr.length = 2 // 也可以
- 
 
 
+  /* 修改数组长度的方法重新 */
+  // effect(() => {
+  //   proxyObj.arr.push(33)
+  // })
+
+  // effect(() => {
+  //   proxyObj.arr.push(3)  // 不重写会导致栈溢出
+  // })
+
+
+  /* 实现map 和 set的响应收集 */
+  let set = new Set([1, 2])
+  let p = reactive(set)
+  console.log(p.size)
 }

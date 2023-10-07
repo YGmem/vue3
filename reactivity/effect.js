@@ -5,12 +5,28 @@ let effectStack = [] // 栈区 防止嵌套副作用 导致的内部副作用函
 export const ITERATE_KEY = Symbol() // in操作的读取存储的副作用key 用于in 操作的依赖副作用存储 触发
 
 
+// 设置一个值实现依赖的暂停收集
+let shouldTrack = true
+const trackStack = []
+
+/* 暂停依赖 */
+export function pauseTracking() {
+  trackStack.push(shouldTrack)
+  shouldTrack = false
+}
+
+/* 恢复依赖 */
+export function resetTracking() {
+  let last = trackStack.pop()
+  shouldTrack = last === undefined ? true : last
+}
+
 const bucket = new WeakMap() // 桶 搜集全部依赖函数
 
 
 export function track(target, key) {
   // 没有 activeEffect，直接 return
-  if (!activeEffect) return
+  if (!activeEffect || !shouldTrack) return
   let depsMap = bucket.get(target)
   if (!depsMap) {
     bucket.set(target, (depsMap = new Map()))

@@ -4,6 +4,12 @@ import {
   readonlyHandlers
 } from "./proxy.js"
 
+import { toRawType } from "../utils/utils.js"
+import { collectionHandlers } from "./proxyMapSet.js"
+
+
+
+
 /* 定义一个map集合存储代理对象 */
 let proxyMap = new Map()
 
@@ -15,7 +21,7 @@ export function reactive(obj) {
   if (res) {
     return res
   }
-  let proxyObj = createReactive(obj, mutableHandlers)
+  let proxyObj = createReactive(obj, mutableHandlers, collectionHandlers)
   /* 存储代理对象 */
   proxyMap.set(obj, proxyObj)
   return proxyObj
@@ -32,7 +38,38 @@ export function readonly(obj) {
 }
 
 
+/* 用户存储代理对象的类型 */
+const TargetType = {
+  INVALID: 0,
+  COMMON: 1,
+  COLLECTION: 2
+}
+
+/* 类型分类 */
+function targetTypeMap(rawType) {
+  switch (rawType) {
+    case 'Object':
+    case 'Array':
+      return TargetType.COMMON
+    case 'Map':
+    case 'Set':
+    case 'WeakMap':
+    case 'WeakSet':
+      return TargetType.COLLECTION
+    default:
+      return TargetType.INVALID
+  }
+}
+
+
 /* 创建响应 */
-function createReactive(obj, baseHandlers) {
-  return new Proxy(obj, baseHandlers)
+function createReactive(obj, baseHandlers,) {
+
+  /* 判断类型 */
+  let targetType = targetTypeMap(toRawType(obj))
+
+  return new Proxy(
+    obj,
+    targetType === TargetType.COLLECTION ? collectionHandlers : baseHandlers
+  )
 }

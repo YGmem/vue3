@@ -8,6 +8,7 @@ import cleanup from './test/cleanup.js'
 import watch from './test/watch.js'
 import effectTest from './test/effectTest.js'
 import reactiveText from './test/reactive.text.js'
+import './test/mapSetProxy.text.js'
 
 
 let obj = {
@@ -39,4 +40,4 @@ let proxyObj = reactive(obj)
 
 
 /* reactiveText */
-reactiveText()
+// reactiveText()
