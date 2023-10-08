@@ -1,9 +1,10 @@
 import { ProxyType } from "../operations/index.js"
-
+import { MAP_KEY_ITERATE_KEY } from "./proxyMapSet.js"
+import { toRawType } from "../utils/utils.js"
+import { isArray } from "../utils/utils.js"
 let activeEffect  // 当前触发的副作用函数
 let effectStack = [] // 栈区 防止嵌套副作用 导致的内部副作用函数触发后 外层的触发函数变成内部的 副作用函数
 export const ITERATE_KEY = Symbol() // in操作的读取存储的副作用key 用于in 操作的依赖副作用存储 触发
-
 
 // 设置一个值实现依赖的暂停收集
 let shouldTrack = true
@@ -43,38 +44,39 @@ export function track(target, key) {
 }
 
 
+/* vue3 源码的trigger版本(差不多这个意思,不是完全一样) */
 export function trigger(target, key, type, newVal) {
   const depsMap = bucket.get(target)
   if (!depsMap) return
   const effects = depsMap.get(key)
 
-  const iterateEffects = depsMap.get(ITERATE_KEY)
 
-  const effectsToRun = new Set()
-  effects && effects.forEach(effectFn => {
-    // 不等于当前执行函数才添加执行
-    if (effectFn !== activeEffect) {
-      effectsToRun.add(effectFn)
-    }
-  })
+  const effectsToRun = [] // 全部需要执行的副作用函数
+  const deps = [] // 存储副作用Set数据
+
+  deps.push(effects)
 
   // 将删除和添加操作也进行副作用执行
-  if (type === ProxyType.DELETE || type === ProxyType.ADD) {
-    iterateEffects && iterateEffects.forEach(effectFn => {
-      if (effectFn !== activeEffect) {
-        effectsToRun.add(effectFn)
-      }
-    })
+  if (
+    type === ProxyType.DELETE ||
+    type === ProxyType.ADD ||
+    (type === ProxyType.SET && toRawType(target) === 'Map')
+  ) {
+    deps.push(depsMap.get(ITERATE_KEY))
   }
+
+  // 如果为map的操作为keys则只有删除和添加执行副作用修改值，也就是修改不执行
+  if (
+    (type === ProxyType.DELETE || type === ProxyType.ADD) &&
+    toRawType(target) === 'Map'
+  ) {
+    deps.push(depsMap.get(MAP_KEY_ITERATE_KEY))
+  }
+
 
   // 如果为数组且为ADD 则取出所有length触发响应
   if (type === ProxyType.ADD && Array.isArray(target)) {
-    let lengthEffects = depsMap.get('length')
-    lengthEffects && lengthEffects.forEach(effectFn => {
-      if (effectFn !== activeEffect) {
-        effectsToRun.add(effectFn)
-      }
-    })
+    deps.push(depsMap.get('length'))
   }
 
   /* 如果为数组且修改的字段为length 则大于等于length的会被删除 将删除的添加响应列表 */
@@ -91,6 +93,13 @@ export function trigger(target, key, type, newVal) {
   }
 
 
+  /* 解构set push 数组会全部添加到数组里 */
+  deps.forEach(dep => {
+    if (dep) { // 检查undefined
+      effectsToRun.push(...dep)
+    }
+  })
+
   effectsToRun.forEach(effectFn => {
     // 如果一个副作用函数存在调度器，则调用该调度器，并将副作用函数作为参数传递
     if (effectFn.options?.scheduler) {
@@ -102,6 +111,84 @@ export function trigger(target, key, type, newVal) {
   })
 
 }
+
+
+/* vue设计与实现的trigger版本 */
+// export function trigger(target, key, type, newVal) {
+//   const depsMap = bucket.get(target)
+//   if (!depsMap) return
+//   const effects = depsMap.get(key)
+
+
+//   const effectsToRun = new Set()
+//   effects && effects.forEach(effectFn => {
+//     // 不等于当前执行函数才添加执行
+//     if (effectFn !== activeEffect) {
+//       effectsToRun.add(effectFn)
+//     }
+//   })
+
+//   // 将删除和添加操作也进行副作用执行
+//   if (
+//     type === ProxyType.DELETE ||
+//     type === ProxyType.ADD ||
+//     (type === ProxyType.SET && toRawType(target) === 'Map')
+//   ) {
+//     const iterateEffects = depsMap.get(ITERATE_KEY)
+//     iterateEffects && iterateEffects.forEach(effectFn => {
+//       if (effectFn !== activeEffect) {
+//         effectsToRun.add(effectFn)
+//       }  
+//     })
+//   }
+//     // 如果为map的操作为keys则只有删除和添加执行副作用修改值，也就是修改不执行
+//   if (
+//     (type === ProxyType.DELETE || type === ProxyType.ADD) &&
+//     toRawType(target) === 'Map'
+//   ) {
+//     const iterateEffects = depsMap.get(MAP_KEY_ITERATE_KEY)
+//     iterateEffects && iterateEffects.forEach(effectFn => {
+//       if (effectFn !== activeEffect) {
+//         effectsToRun.add(effectFn)
+//       }
+//     })
+//   }
+
+//   // 如果为数组且为ADD 则取出所有length触发响应
+//   if (type === ProxyType.ADD && Array.isArray(target)) {
+//     let lengthEffects = depsMap.get('length')
+//     lengthEffects && lengthEffects.forEach(effectFn => {
+//       if (effectFn !== activeEffect) {
+//         effectsToRun.add(effectFn)
+//       }
+//     })
+//   }
+
+//   /* 如果为数组且修改的字段为length 则大于等于length的会被删除 将删除的添加响应列表 */
+//   if (Array.isArray(target) && key === 'length') {
+//     depsMap && depsMap.forEach((effects, index) => {
+//       if (index >= newVal) {
+//         effects.forEach(effectFn => {
+//           if (effectFn !== activeEffect) {
+//             effectsToRun.add(effectFn)
+//           }
+//         })
+//       }
+//     })
+//   }
+
+
+//   effectsToRun.forEach(effectFn => {
+//     // 如果一个副作用函数存在调度器，则调用该调度器，并将副作用函数作为参数传递
+//     if (effectFn.options?.scheduler) {
+//       effectFn.options.scheduler(effectFn)
+//     } else {
+//       // 否则直接执行副作用函数（之前的默认行为）
+//       effectFn()
+//     }
+//   })
+
+// }
 
 
 export function effect(fn, options = {}) {

@@ -1,9 +1,13 @@
-import { toRaw } from "../utils/utils.js"
-import { ProxyType } from "../operations/index.js"
+import { toRaw, isMap } from "../utils/utils.js"
+import { ProxyType, ReactiveFlags } from "../operations/index.js"
 import { trigger, track } from "./effect.js"
 import { ITERATE_KEY } from "./effect.js"
-import { ReactiveFlags } from "../operations/index.js"
 import { readonly, reactive } from "./reactive.js"
+import { toReactive } from "./reactive.js"
+
+
+/* 创建一个keys 单独的Symbol 防止修改values导致的响应 */
+export const MAP_KEY_ITERATE_KEY = Symbol()
 
 export let collectionHandlers = {
   get: createInstrumentationGetter()
@@ -50,6 +54,7 @@ function deleteEntry(value) {
   let hasKey = target.has(value)
 
   let res = target.delete(value)
+  // 如果删除的值存在才响应
   if (hasKey) {
     trigger(target, ITERATE_KEY, ProxyType.DELETE)
   }
@@ -102,11 +107,57 @@ function add(value) {
 }
 
 /* forEach 响应 */
-function forEach(callback) {
+function forEach(callback, thisArg) {
+  // 取得原始数据对象
   let target = toRaw(this)
+
+  // 与 ITERATE_KEY 建立响应联系
   track(target, ITERATE_KEY)
-  target.forEach(callback)
+  // 通过原始数据对象调用 forEach 方法，并把 callback 传递过去
+  target.forEach((v, k) => {
+    callback.call(thisArg, toReactive(v), toReactive(k), this)
+  })
 }
+
+/* 创建迭代器方法 */
+function createIterableMethod(method) {
+
+  return function () {
+
+    // 获取原始对象
+    let target = this[ReactiveFlags.RAW]
+    let targetIsMap = isMap(target)
+
+    // 调用原始对象的迭代器方法 相当于使用entries
+    let itr = target[method]()
+
+    // 是否判断是否为entries 或者为迭代器
+    let isPair = method === 'entries' || (method === Symbol.iterator && targetIsMap)
+
+    // 如果为keys 那么修改value没必要更新所以用新的Symbol对象代替
+    track(target, method === 'keys' ? MAP_KEY_ITERATE_KEY : ITERATE_KEY)
+    return {
+      next() {
+        // 自己实现一个next方法 已实现深度响应
+        let { value, done } = itr.next()
+
+        // 实现迭代出的值的深度响应
+        return done
+          ? { value, done } :
+          {
+            // 为entries 或者为迭代器 值为数组第一个值为value 第二个值为key 否则为keys 和values 只有值或者key
+            value: isPair ? [toReactive(value[0]), toReactive(value[1])] : toReactive(value)
+          }
+      },
+      // 实现可迭代协议 不然无法使用迭代 for(let key of map.map迭代方法)
+      [Symbol.iterator]() {
+        return this
+      }
+    }
+  }
+
+}
+
 
 
 function createInstrumentations() {
@@ -126,6 +177,12 @@ function createInstrumentations() {
   }
 
 
+  let iteratorMethods = ['values', 'keys', 'entries', Symbol.iterator]
+  iteratorMethods.forEach(methods => {
+    mutableInstrumentations[methods] = createIterableMethod(methods)
+  })
+
+
   return [
     mutableInstrumentations
   ]
@@ -140,7 +197,6 @@ const [
 /* 创建map和set的get */
 function createInstrumentationGetter() {
 
-  
 
   return (target, key, receiver) => {
 

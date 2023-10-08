@@ -32,3 +32,26 @@ export const toRawType = value => {
  */
 export const hasChanged = (value, oldValue) =>
   !Object.is(value, oldValue)
+
+
+/**
+ * @description: 是否为对象
+ * @param {*} val
+ */
+export const isObject = (val) =>
+  val !== null && typeof val === 'object'
+
+
+
+/**
+ * @description: 是否为数组
+ */
+export const isArray = Array.isArray
+
+
+/**
+ * @description: 是否为Map
+ * @param {*} val
+ */
+export const isMap = (val) =>
+  toTypeString(val) === '[object Map]'

@@ -4,7 +4,7 @@ import {
   readonlyHandlers
 } from "./proxy.js"
 
-import { toRawType } from "../utils/utils.js"
+import { toRawType,isObject } from "../utils/utils.js"
 import { collectionHandlers } from "./proxyMapSet.js"
 
 
@@ -63,7 +63,7 @@ function targetTypeMap(rawType) {
 
 
 /* 创建响应 */
-function createReactive(obj, baseHandlers,) {
+function createReactive(obj, baseHandlers) {
 
   /* 判断类型 */
   let targetType = targetTypeMap(toRawType(obj))
@@ -73,3 +73,11 @@ function createReactive(obj, baseHandlers,) {
     targetType === TargetType.COLLECTION ? collectionHandlers : baseHandlers
   )
 }
+
+
+/**
+ * @description: 判断是否为对象 为转化为响应 否则返回原始值
+ * @param {*} value
+ */
+export const toReactive = (value) =>
+  isObject(value) ? reactive(value) : value
