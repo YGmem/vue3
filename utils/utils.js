@@ -55,3 +55,12 @@ export const isArray = Array.isArray
  */
 export const isMap = (val) =>
   toTypeString(val) === '[object Map]'
+
+
+/**
+ * @description: 判断是否为ref
+ * @param {*} ref
+ */
+export const isRef = (ref) => {
+  return !!(ref && ref.__v_isRef)
+}

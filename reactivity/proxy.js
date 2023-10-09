@@ -4,7 +4,7 @@ import {
   effect,
   ITERATE_KEY
 } from './effect.js'
-import { extend } from '../utils/utils.js'
+import { extend, isRef } from '../utils/utils.js'
 import { reactive, readonly } from './reactive.js'
 import { ProxyType, ReactiveFlags } from '../operations/index.js'
 import { arrayInstrumentations } from './rewriteArray.js'
@@ -40,8 +40,15 @@ function createGetter(isShallow = false, isReadonly = false) {
 
     // 如果是浅响应，则直接返回原始值
     if (isShallow) {
+
       return res
     }
+
+    // 实现脱ref 如果为ref直接返回.value后的值 源码里跳过了数组和整数的解包
+    if (isRef(res)) {
+      return res.value
+    }
+
 
     // 如果是对象递归调用 reactive 代理子对象 
     if (typeof res === 'object' && res !== null) {
