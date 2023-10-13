@@ -62,6 +62,7 @@ function createGetter(isShallow = false, isReadonly = false) {
 
 function createSetter(isReadonly = false) {
   return function set(target, key, newVal, receiver) {
+  console.log("🚀 ~ file: proxy.js:65 ~ set ~ target, key, newVal, receiver:", target, key, newVal, receiver)
 
     if (isReadonly) {
       console.warn(`属性${key}是只读的`)

@@ -1,7 +1,8 @@
 import { reactive } from './reactivity/reactive.js'
 
 /* 测试使用 */
-import './test/render.text.js' // render 函数使用
+// import './test/render.text.js' // render 函数使用
+import './test/render2.text.js'
 import scheduler from './test/scheduler.js'
 import computed from './test/computed.js'
 import cleanup from './test/cleanup.js'
@@ -41,4 +42,4 @@ let proxyObj = reactive(obj)
 
 
 /* reactiveText */
-// reactiveText()
+reactiveText()

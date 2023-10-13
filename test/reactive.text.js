@@ -57,7 +57,6 @@ export default function () {
   // // 这里之前代码为false 因为proxyObj里面的代理对象，但是现在查询的是原始对象，要实现得重写includes方法(还有indexOf，laseIndexOf),使用原始对象再次查询一遍
   // console.log(proxyObj.includes(obj))
 
-
 }
 
 

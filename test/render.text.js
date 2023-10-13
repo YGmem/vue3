@@ -1,4 +1,6 @@
 import { renderer } from "../renderer/index.js"
+import { ref } from "../reactivity/ref.js"
+import { effect } from "../reactivity/effect.js"
 
 const vnode = {
   tag: 'div',
@@ -38,4 +40,18 @@ function render() {
   }
 }
 
-renderer(vnode, document.body)
+function rendere(domString, container) {
+  container.innerHTML = domString
+}
+
+let a = ref(1)
+
+effect(() => {
+  rendere(`<h1>${a.value}</h1>`, document.body)
+})
+
+setTimeout(() => {
+  a.value = 2
+}, 2000);
+
+// renderer(vnode, document.body)
