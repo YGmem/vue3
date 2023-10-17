@@ -12,24 +12,28 @@ export function createRenderer(options = {}) {
     createElement,
     insert,
     setElementText,
-    setElementAttr
+    setElementAttr,
+    patchProps
   } = options
 
 
 
   /**
- * @description: 
- * @param vnode 虚拟dom 
- * 类似这种
- * ```js
- * let a = {
- *    type:'h1',
- *    children:"内容",
- *    ...
- * }
- * 
- * @param container 容器(dom元素)
- */
+    * @description: 
+    * @param vnode 虚拟dom 
+    * 类似这种
+    * ```js
+    * let a = {
+    *    type:'h1',
+    *    props:{
+    *     disable: false
+    *    },
+    *    children:"内容",
+    *    ...
+    * }
+    * 
+    * @param container 容器(dom元素)
+   */
   function render(vnode, container) {
     if (vnode) {
       patch(container._vnode, vnode, container)
@@ -53,7 +57,7 @@ export function createRenderer(options = {}) {
   function patch(n1, n2, container) {
     // 如果旧节点不存在表示为第一次更新，执行挂载操作
     if (!n1) {
-      mountedElement(n2, container)
+      mountElement(n2, container)
     } else {
 
     }
@@ -66,13 +70,14 @@ export function createRenderer(options = {}) {
    * @param {*} vnode 需要挂载的虚拟dom
    * @param {*} container 挂载的真实dom
    */
-  function mountedElement(vnode, container) {
+  function mountElement(vnode, container) {
     // 创建dom
     let el = createElement(vnode.type)
 
     if (vnode.props) {
       for (const key in vnode.props) {
-        setElementAttr(el, key, vnode.props[key])
+        // 给dom添加属性
+        patchProps(el, key, null, vnode.props[key])
       }
     }
 
@@ -83,7 +88,7 @@ export function createRenderer(options = {}) {
     } else if (isArray(vnode.children)) {
       // 如果子节点为数组表示子节点为多个虚拟dom
       vnode.children.forEach(item => {
-        mountedElement(item, el)
+        mountElement(item, el)
       })
     }
 
@@ -103,3 +108,18 @@ export function createRenderer(options = {}) {
 
 
 
+/**
+ * @description: 判断dom上的不然直接修改特殊的属性 为则返回false
+ * @param {*} el dom
+ * @param {*} key 属性
+ * @param {*} value 属性值
+ */
+function shouldSetAsProps(el, key, value) {
+
+  // input的form 属性无法直接修改是只读的 返回false
+  if (key === 'form' && el.tagName === 'INPUT') return false
+
+
+  // 兜底 存在就会返回true
+  return key in el
+}

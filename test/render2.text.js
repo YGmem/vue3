@@ -14,4 +14,17 @@ let el = {
   children: "我是内容"
 }
 
+
 renderer.render(el, document.querySelector('#app'))
+
+
+
+let elInput = {
+  type: "input",
+  props: {
+    disabled: ''
+  }
+}
+
+
+renderer.render(elInput, document.querySelector('#app'))
