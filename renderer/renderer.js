@@ -4,7 +4,7 @@ import { isArray } from "../utils/utils.js"
 
 /**
  * @description: 创建渲染器
- * @param {*} options 创建所需的方法，这个是为了跨平台，为了不依赖浏览器原生的方法，将修改的方法当做参数传递，这样即可实现跨平台，因为只要我们修改传的方法即可实现在不同平台运行
+ * @param options 创建所需的方法，这个是为了跨平台，为了不依赖浏览器原生的方法，将修改的方法当做参数传递，这样即可实现跨平台，因为只要我们修改传的方法即可实现在不同平台运行
  */
 export function createRenderer(options = {}) {
 
@@ -19,7 +19,7 @@ export function createRenderer(options = {}) {
 
 
   /**
-    * @description: 
+    * @description: 渲染函数
     * @param vnode 虚拟dom 
     * 类似这种
     * ```js
@@ -40,10 +40,10 @@ export function createRenderer(options = {}) {
     } else {
       // 如果新节点不存在表示为卸载操作清空dom内容
       if (container._vnode) {
-        container.innerHTML = ''
+        unmount(container._vnode)
       }
-      container._vnode = ''
     }
+    container._vnode = vnode
   }
 
 
@@ -71,8 +71,8 @@ export function createRenderer(options = {}) {
    * @param {*} container 挂载的真实dom
    */
   function mountElement(vnode, container) {
-    // 创建dom
-    let el = createElement(vnode.type)
+    // 创建dom 并给虚拟dom添加el属性指向真实dom
+    let el = vnode.el = createElement(vnode.type)
 
     if (vnode.props) {
       for (const key in vnode.props) {
@@ -109,17 +109,13 @@ export function createRenderer(options = {}) {
 
 
 /**
- * @description: 判断dom上的不然直接修改特殊的属性 为则返回false
- * @param {*} el dom
- * @param {*} key 属性
- * @param {*} value 属性值
+ * @description: 执行dom卸载操作
+ * @param {*} vnode 需要卸载的虚拟dom
  */
-function shouldSetAsProps(el, key, value) {
-
-  // input的form 属性无法直接修改是只读的 返回false
-  if (key === 'form' && el.tagName === 'INPUT') return false
-
-
-  // 兜底 存在就会返回true
-  return key in el
+function unmount(vnode) {
+  console.log("🚀 ~ file: renderer.js:117 ~ unmount ~ vnode.el:", vnode.el, vnode)
+  let parent = vnode.el.parentNode
+  if (parent) {
+    parent.removeChild(vnode.el)
+  }
 }

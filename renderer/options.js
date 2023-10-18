@@ -34,8 +34,11 @@ function insert(el, parent, anchor = null) {
 
 // 将属性设置相关操作封装到 patchProps 函数中，并作为渲染器选项传递
 export function patchProps(el, key, prevValue, nextValue) {
-  // 判断是否能直接修改 这里要注意直接修改和使用setAttribute 的区别，区别setAttribute 设置的是默认值，哪怕修改了，获取后也是一开始设置的默认值，但是直接修改是修改html属性后续变更是可以变化的
-  if (shouldSetAsProps(el, key, nextValue)) {
+  // 如果为class使用 className修改class这样性能好
+  if (key === 'class') {
+    el.className = nextValue || ''
+  } else if (shouldSetAsProps(el, key, nextValue)) {
+    // 判断是否能直接修改 这里要注意直接修改和使用setAttribute 的区别，区别setAttribute 设置的是默认值，哪怕修改了，获取后也是一开始设置的默认值，但是直接修改是修改html属性后续变更是可以变化的
     // 提取dom上这个属性的类型比如disable就是boolean
     let type = typeof el[key]
 
@@ -53,6 +56,21 @@ export function patchProps(el, key, prevValue, nextValue) {
 
 }
 
+/**
+ * @description: 判断dom上的不然直接修改特殊的属性 为则返回false
+ * @param {*} el dom
+ * @param {*} key 属性
+ * @param {*} value 属性值
+ */
+function shouldSetAsProps(el, key, value) {
+
+  // input的form 属性无法直接修改是只读的 返回false
+  if (key === 'form' && el.tagName === 'INPUT') return false
+
+
+  // 兜底 存在就会返回true
+  return key in el
+}
 
 
 /**
