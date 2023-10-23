@@ -1,3 +1,4 @@
+import { isArray } from "../utils/utils.js"
 
 /**
  * @description: 创建dom元素
@@ -34,6 +35,8 @@ function insert(el, parent, anchor = null) {
 
 // 将属性设置相关操作封装到 patchProps 函数中，并作为渲染器选项传递
 export function patchProps(el, key, prevValue, nextValue) {
+
+
   // 如果为class使用 className修改class这样性能好
   if (key === 'class') {
     el.className = nextValue || ''
@@ -49,12 +52,58 @@ export function patchProps(el, key, prevValue, nextValue) {
       el[key] = false
     }
 
+  } else if (/^on/.test(key)) {
+    // 如果开头为on表示为事件
+    let eventName = key.slice(2).toLowerCase()
+
+    let invoker = el._vei || (el._vei = {})
+    invoker = invoker[key]
+    if (nextValue) {
+      if (!invoker) { // 判断监听函数是否存在
+        // 如果不存在定义这个并且直接监听，这样更新就不用删除之前的再监听，直接替换监听的函数即可
+        invoker = el._vei[key] = (e) => {
+
+          // e.timestamp 事件发生的时间，如果发生的时间早于定义该函数的时间，不触发该绑定的函数
+          if (e.timestamp <= invoker.attached) return
+          // 如果为数组表示为监听多个函数 onClick:[fn1,fn2]
+          if (isArray(invoker.value)) {
+            invoker.value.forEach(fn => fn(e))
+          } else {
+            // 否则为普通监听 onClick:()=>{}
+            invoker.value(e)
+          }
+        }
+        invoker.value = nextValue
+        invoker.attached = getNow() // 给一个定义的时间的时间戳
+        el.addEventListener(eventName, invoker)
+      } else {
+        // 如果存在就直接替换这个函数即可
+        invoker.value = nextValue
+      }
+    } else if (invoker) {
+      // 如果没有就直接删除监听
+      el.removeEventListener(eventName, invoker)
+    }
+
+
+
   } else {
     // 如果不能使用setAttribute 修改
     setElementAttr(el, key, nextValue)
   }
 
 }
+
+
+let timestamp
+let p = Promise.resolve()
+/**
+ * @description: 获取当前时间的时间戳 并为了减少Date创建时间戳的性能消耗，同一个任务队列获取的缓存时间戳，时间戳会下一个微任务队列执行时重置
+ */
+function getNow() {
+  return timestamp || ((p.then(() => timestamp = 0)), timestamp = Date.now())
+}
+
 
 /**
  * @description: 判断dom上的不然直接修改特殊的属性 为则返回false

@@ -50,7 +50,7 @@ function createGetter(isShallow = false, isReadonly = false) {
     }
 
 
-    // 如果是对象递归调用 reactive 代理子对象 
+    // 如果是对象调用 reactive 代理子对象返回响应对象 
     if (typeof res === 'object' && res !== null) {
       return isReadonly ? readonly(res) : reactive(res)
     }

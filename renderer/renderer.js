@@ -55,14 +55,44 @@ export function createRenderer(options = {}) {
    * @param {*} container 容器(dom元素)
    */
   function patch(n1, n2, container) {
-    // 如果旧节点不存在表示为第一次更新，执行挂载操作
-    if (!n1) {
-      mountElement(n2, container)
-    } else {
 
+    // 判断新旧节点的类型是否一致 如果不一致要先卸载旧的
+    if (n1 && n1.type !== n2.type) {
+      unmount(n1)
+      n1 = null
     }
+
+    let { type } = n2
+    type = typeof type
+    switch (type) {
+      case 'string': // 如果为字符串表示为普通挂载
+        // 如果旧节点不存在表示为第一次更新，执行挂载操作
+
+        if (!n1) {
+          mountElement(n2, container)
+        } else {
+          // 更新
+          patchElement(n1, n2, container)
+        }
+        break
+      case 'object': // 为对象表示为组件
+        break
+      default:
+        break
+    }
+
   }
 
+
+  /**
+   * @description: 节点的更新操作
+   * @param {*} n1
+   * @param {*} n2
+   * @param {*} container
+   */
+  function patchElement(n1, n2, container) {
+
+  }
 
 
   /**
