@@ -59,7 +59,7 @@ export default function watch(source, cb, options = {}) {
     oldValue = effectFn()
   }
 }
-
+  
 function traverse(value, seen = new Set()) {
   // 如果要读取的数据是原始值，或者已经被读取过了，那么什么都不做
   if (typeof value !== 'object' || typeof value === null

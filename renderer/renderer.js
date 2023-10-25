@@ -1,6 +1,8 @@
 import { isArray } from "../utils/utils.js"
 
-
+export const Text = Symbol.for('v-txt')  // 文本节点
+export const Comment = Symbol.for('v-cmt') // 注释节点
+export const Fragment = Symbol.for('v-fgt') // 片段表示没有根节点的vue组件
 
 /**
  * @description: 创建渲染器
@@ -13,7 +15,10 @@ export function createRenderer(options = {}) {
     insert,
     setElementText,
     setElementAttr,
-    patchProps
+    patchProps,
+    createComment,
+    setText,
+    createText
   } = options
 
 
@@ -63,21 +68,48 @@ export function createRenderer(options = {}) {
     }
 
     let { type } = n2
-    type = typeof type
     switch (type) {
-      case 'string': // 如果为字符串表示为普通挂载
-        // 如果旧节点不存在表示为第一次更新，执行挂载操作
+      case Text: // 文本节点
+        if (!n1) {
+          // 调用 createText 函数创建文本节点
+          const el = n2.el = createText(n2.children)
+          insert(el, container)
+        } else {
+          const el = n2.el = n1.el
+          if (n2.children !== n1.children) {
+            // 调用 setText 函数更新文本节点的内容
+            setText(el, n2.children)
+          }
+        }
+        break
+      case Comment: // 注释节点
+        if (!n1) {
+          // 调用 createText 函数创建注释节点
+          const el = n2.el = createComment(n2.children)
+          insert(el, container)
+        } else {
+          // 不支持动态更新注释
+          n2.el = n1.el
+        }
+        break
+      case Fragment: // 碎片节点表示没有根节点的vue组件
+        if (!n1) {
+          // 如果旧 vnode 不存在，则只需要将 Fragment 的 children 逐个挂载即可
+          n2.children.forEach(c => patch(null, c, container))
+        } else {
+          // 如果旧 vnode 存在，则只需要更新 Fragment 的 children 即可
+          patchChildren(n1, n2, container)
+        }
+        break
 
+      default:
+        // 目前默认就当 type:'h1' 这种来
         if (!n1) {
           mountElement(n2, container)
         } else {
           // 更新
           patchElement(n1, n2, container)
         }
-        break
-      case 'object': // 为对象表示为组件
-        break
-      default:
         break
     }
 
@@ -112,11 +144,10 @@ export function createRenderer(options = {}) {
 
 
   /**
-   * @description: 
-   * @param {*} n1
-   * @param {*} n2
-   * @param {*} container
-   * @return {*}
+   * @description: 更新子节点
+   * @param {*} n1 旧节点
+   * @param {*} n2 新节点
+   * @param   {*} container dom
    */
   function patchChildren(n1, n2, container) {
     // 判断新子节点的类型是否是文本节点
@@ -194,7 +225,12 @@ export function createRenderer(options = {}) {
  * @param {*} vnode 需要卸载的虚拟dom
  */
 function unmount(vnode) {
-  console.log("🚀 ~ file: renderer.js:117 ~ unmount ~ vnode.el:", vnode.el, vnode)
+  // 在卸载时，如果卸载的 vnode 类型为 Fragment，则需要卸载其 children
+  if (vnode.type === Fragment) {
+    vnode.children.forEach(c => unmount(c))
+    return
+  }
+
   let parent = vnode.el.parentNode
   if (parent) {
     parent.removeChild(vnode.el)

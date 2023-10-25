@@ -23,7 +23,7 @@ function setElementText(el, text) {
 
 /**
  * @description: 在给定的parent下添加指定
- * @param {*} el 被添加的dom
+ * @param {string} el 被添加的dom
  * @param {*} parent 容器dom
  * @param {*} anchor 暂时不知道
  */
@@ -139,10 +139,38 @@ function setElementAttr(el, attr, value = '') {
 }
 
 
+/**
+ * @description: 设置文本内容
+ * @param {*} el dom
+ * @param {*} text 文本内容
+ */
+export function setText(el, text) {
+  el.nodeValue = text
+}
+
+
+/**
+ * @description: 创建文本节点
+ * @param {*} text 文本内容
+ */
+export function createText(text) {
+  return document.createTextNode(text)
+}
+/**
+ * @description: 创建注释节点
+ * @param {*} text 注释内容
+ */
+export function createText(text) {
+  return document.createComment(text)
+}
+
+
 export const options = {
   createElement,
   insert,
   setElementText,
   setElementAttr,
-  patchProps
+  patchProps,
+  setText,
+  createText
 }
