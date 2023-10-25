@@ -64,7 +64,13 @@ export function patchProps(el, key, prevValue, nextValue) {
         invoker = el._vei[key] = (e) => {
 
           // e.timestamp 事件发生的时间，如果发生的时间早于定义该函数的时间，不触发该绑定的函数
-          if (e.timestamp <= invoker.attached) return
+          console.log(e, invoker.attached, e.timestamp <= invoker.attached)
+
+          if (!e._vts) {  // 这里可以判断有没有这个属性，如果没有就表示第一次绑定事件
+            e._vts = Date.now()
+          } else if (e._vts <= invoker.attached) { // 如果已经绑定了事件判断如果发生的时间早于定义该函数的时间，不触发该绑定的函数
+            return
+          }
           // 如果为数组表示为监听多个函数 onClick:[fn1,fn2]
           if (isArray(invoker.value)) {
             invoker.value.forEach(fn => fn(e))
