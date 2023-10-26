@@ -21,8 +21,6 @@ export function createRenderer(options = {}) {
     createText
   } = options
 
-
-
   /**
     * @description: 渲染函数
     * @param vnode 虚拟dom 
@@ -92,7 +90,7 @@ export function createRenderer(options = {}) {
           n2.el = n1.el
         }
         break
-      case Fragment: // 碎片节点表示没有根节点的vue组件
+      case Fragment: // 碎片节点表示没有唯一根节点的vue组件
         if (!n1) {
           // 如果旧 vnode 不存在，则只需要将 Fragment 的 children 逐个挂载即可
           n2.children.forEach(c => patch(null, c, container))
@@ -199,8 +197,8 @@ export function createRenderer(options = {}) {
       setElementText(el, vnode.children)
     } else if (isArray(vnode.children)) {
       // 如果子节点为数组表示子节点为多个虚拟dom
-      vnode.children.forEach(item => {
-        mountElement(item, el)
+      vnode.children.forEach(child => {
+        patch(null, child, el)
       })
     }
 

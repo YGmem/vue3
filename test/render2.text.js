@@ -2,7 +2,7 @@ import { createRenderer } from "../renderer/renderer.js"
 import { options } from "../renderer/options.js"
 import { ref } from "../reactivity/ref.js"
 import { effect } from "../reactivity/effect.js"
-
+import { Comment, Fragment, Text } from "../renderer/renderer.js"
 let renderer = createRenderer(options)
 
 
@@ -99,29 +99,60 @@ let renderer = createRenderer(options)
 
 
 
-const bol = ref(false)
+// const bol = ref(false)
 
-effect(() => {
-  // 创建 vnode
-  const vnode = {
-    type: 'div',
-    props: bol.value ? {
-      onClick: () => {
-        alert('父元素 clicked')
-      }
-    } : {},
-    children: [
-      {
-        type: 'p',
-        props: {
-          onClick: () => {
-            bol.value = true
-          }
-        },
-        children: 'text'
-      }
-    ]
-  }
-  // 渲染 vnode
-  renderer.render(vnode, document.querySelector('#app'))
-})
+// effect(() => {
+//   // 创建 vnode
+//   const vnode = {
+//     type: 'div',
+//     props: bol.value ? {
+//       onClick: () => {
+//         alert('父元素 clicked')
+//       }
+//     } : {},
+//     children: [
+//       {
+//         type: 'p',
+//         props: {
+//           onClick: () => {
+//             bol.value = true
+//           }
+//         },
+//         children: 'text'
+//       }
+//     ]
+//   }
+//   // 渲染 vnode
+//   renderer.render(vnode, document.querySelector('#app'))
+// })
+
+
+
+/* 注释节点 */
+// const vnode = {
+//   type: Comment,
+//   children: '我是注释'
+// }
+// // 渲染 vnode
+// renderer.render(vnode, document.querySelector('#app'))
+
+
+/* 碎片节点 */
+const vnode = {
+  type: 'ul',
+  children: [
+    {
+      type: Fragment,
+      children: [
+        { type: 'li', children: '1' },
+        { type: 'li', children: '2' },
+        { type: 'li', children: '3' }
+      ]
+    }
+  ]
+}
+// 渲染 vnode
+renderer.render(vnode, document.querySelector('#app'))
+
+
+/*  */

@@ -160,7 +160,7 @@ export function createText(text) {
  * @description: 创建注释节点
  * @param {*} text 注释内容
  */
-export function createText(text) {
+export function createComment(text) {
   return document.createComment(text)
 }
 
@@ -172,5 +172,6 @@ export const options = {
   setElementAttr,
   patchProps,
   setText,
-  createText
+  createText,
+  createComment
 }
