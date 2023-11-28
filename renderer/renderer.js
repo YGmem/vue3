@@ -38,6 +38,12 @@ export function createRenderer(options = {}) {
     * @param container 容器(dom元素)
    */
   function render(vnode, container) {
+
+    if (typeof container === 'string') {
+      container = document.querySelector(container)
+    }
+
+
     if (vnode) {
       patch(container._vnode, vnode, container)
     } else {
@@ -105,8 +111,8 @@ export function createRenderer(options = {}) {
         if (!n1) {
           mountElement(n2, container)
         } else {
-          // 更新
-          patchElement(n1, n2, container)
+          // 
+          patchElement(n1, n2)
         }
         break
     }
@@ -145,7 +151,7 @@ export function createRenderer(options = {}) {
    * @description: 更新子节点
    * @param {*} n1 旧节点
    * @param {*} n2 新节点
-   * @param   {*} container dom
+   * @param {*} container dom
    */
   function patchChildren(n1, n2, container) {
     // 判断新子节点的类型是否是文本节点
@@ -164,6 +170,8 @@ export function createRenderer(options = {}) {
       // 判断旧子节点是否也是一组子节点
       if (Array.isArray(n1.children)) {
         // 代码运行到这里，则说明新旧子节点都是一组子节点，这里涉及核心的Diff 算法
+
+        
       } else {
         // 此时：
         // 旧子节点要么是文本子节点，要么不存在
@@ -190,7 +198,7 @@ export function createRenderer(options = {}) {
         patchProps(el, key, null, vnode.props[key])
       }
     }
-
+      
 
     if (typeof vnode.children === 'string') {
       // 如果子节点为字符串表示子节点为文本内容直接挂载
