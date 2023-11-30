@@ -7,8 +7,8 @@ const oldVNode = {
   type: 'div',
   children: [
     { type: 'p', children: '1' },
-    { type: 'p', children: '2' },
-    { type: 'p', children: '3' }
+    { type: 'div', children: '2' },
+    { type: 'h2', children: '3' },
   ]
 }
 
@@ -17,8 +17,10 @@ const newVNode = {
   type: 'div',
   children: [
     { type: 'p', children: '4' },
+    { type: 'p', children: '7' },
     { type: 'p', children: '5' },
-    { type: 'p', children: '6' }
+    { type: 'p', children: '6' },
+    { type: 'p', children: '6' },
   ]
 }
 

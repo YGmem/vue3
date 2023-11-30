@@ -1,16 +1,19 @@
 import { reactive } from './reactivity/reactive.js'
 
 /* 测试使用 */
-// import './test/render.text.js' // render 函数使用
-import './test/render2.text.js'
+
 import scheduler from './test/scheduler.js'
 import computed from './test/computed.js'
 import cleanup from './test/cleanup.js'
 import watch from './test/watch.js'
 import effectTest from './test/effectTest.js'
 import reactiveText from './test/reactive.text.js'
-// import './test/mapSetProxy.text.js'
-// import './test/ref.text.js'
+// import './test/render.text.js' // render 函数使用
+// import './test/render2.text.js' // 渲染器实现
+
+// import './test/mapSetProxy.text.js' // 代理实现
+// import './test/ref.text.js' // 简单diff算法
+
 import './test/diff.text.js'
 
 
@@ -43,4 +46,4 @@ let proxyObj = reactive(obj)
 
 
 /* reactiveText */
-reactiveText()
+// reactiveText()

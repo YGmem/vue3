@@ -170,8 +170,36 @@ export function createRenderer(options = {}) {
       // 判断旧子节点是否也是一组子节点
       if (Array.isArray(n1.children)) {
         // 代码运行到这里，则说明新旧子节点都是一组子节点，这里涉及核心的Diff 算法
+        debugger
+        /* 第一版 全部卸载 全部挂载 */
+        // // 将旧的一组子节点全部卸载 
+        // n1.children.forEach(c => unmount(c))
+        // // 再将新的一组子节点全部挂载到容器中 
+        // n2.children.forEach(c => patch(null, c, container))
 
-        
+        const oldChildren = n1.children
+        const newChildren = n2.children
+        // 旧的一组子节点的长度 
+        const oldLen = oldChildren.length
+        // 新的一组子节点的长度 
+        const newLen = newChildren.length
+        // 两组子节点的公共长度，即两者中较短的那一组子节点的长度 
+        const commonLength = Math.min(oldLen, newLen)
+        // 遍历 commonLength 次 
+        for (let i = 0; i < commonLength; i++) {
+          patch(oldChildren[i], newChildren[i], container)
+        }
+        // 如果 newLen > oldLen，说明有新子节点需要挂载 
+        if (newLen > oldLen) {
+          for (let i = commonLength; i < newLen; i++) {
+            patch(null, newChildren[i], container)
+          }
+        } else if (oldLen > newLen) {
+          // 如果 oldLen > newLen，说明有旧子节点需要卸载 
+          for (let i = commonLength; i < oldLen; i++) {
+            unmount(oldChildren[i])
+          }
+        }
       } else {
         // 此时：
         // 旧子节点要么是文本子节点，要么不存在
@@ -179,6 +207,16 @@ export function createRenderer(options = {}) {
         setElementText(container, '')
         n2.children.forEach(c => patch(null, c, container))
       }
+    } else {
+      // 代码运行到这里，说明新子节点不存在 
+      // 旧子节点是一组子节点，只需逐个卸载即可 
+      if (Array.isArray(n1.children)) {
+        n1.children.forEach(c => unmount(c))
+      } else if (typeof n1.children === 'string') {
+        // 旧子节点是文本子节点，清空内容即可 
+        setElementText(container, '')
+      }
+      // 如果也没有旧子节点，那么什么都不需要做 
     }
   }
 
@@ -198,7 +236,7 @@ export function createRenderer(options = {}) {
         patchProps(el, key, null, vnode.props[key])
       }
     }
-      
+
 
     if (typeof vnode.children === 'string') {
       // 如果子节点为字符串表示子节点为文本内容直接挂载
