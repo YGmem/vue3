@@ -14,7 +14,7 @@ import reactiveText from './test/reactive.text.js'
 // import './test/mapSetProxy.text.js' // 代理实现
 // import './test/ref.text.js' // 简单diff算法
 
-import './test/diff.text.js'
+// import './test/diff.text.js'
 
 
 let obj = {
@@ -42,7 +42,7 @@ let proxyObj = reactive(obj)
 // watch(proxyObj)
 
 /* effect */
-// effectTest()
+effectTest()
 
 
 /* reactiveText */

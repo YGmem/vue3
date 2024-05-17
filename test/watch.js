@@ -1,4 +1,5 @@
 import watch from "../reactivity/watch.js"
+import { ref } from '../reactivity/ref.js'
 
 export default function (proxyObj) {
 
@@ -56,7 +57,35 @@ export default function (proxyObj) {
   // }, 3000)
 
   // proxyObj.age++
-  // proxyObj.age++     
+  // proxyObj.age++  
+
+
+
+
+  /** 个人疑惑 */
+  let obj = ref({
+    a: "11"
+  })
+  // let obj = ref({
+  //   obj2: {
+  //     a:"11"
+  //   }
+  // })
+
+
+  watch(obj.value, (nVal, oVal) => {
+    console.log('🚀 ~ watch ~ nVal,oVal:', nVal, oVal)
+  }, { deep: true })
+
+  setTimeout(() => {
+    // obj.value.obj2.a = '33'
+    obj.value.a = '33'
+  }, 1000)
+  setTimeout(() => {
+    // obj.value.obj2.a = '33'
+    obj.value.a = '44'
+  }, 2000)
+
 
 
 }
@@ -68,13 +97,13 @@ function require() {
   return new Promise((resolve) => {
 
     if (isOne) {
-      console.log(111);
+      console.log(111)
       setTimeout(() => {
         resolve([11])
       }, 2000)
       isOne = false
     } else {
-      console.log(222);
+      console.log(222)
       setTimeout(() => {
         resolve([22])
       }, 1000)

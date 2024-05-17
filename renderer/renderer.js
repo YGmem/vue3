@@ -170,34 +170,26 @@ export function createRenderer(options = {}) {
       // 判断旧子节点是否也是一组子节点
       if (Array.isArray(n1.children)) {
         // 代码运行到这里，则说明新旧子节点都是一组子节点，这里涉及核心的Diff 算法
-        debugger
+
         /* 第一版 全部卸载 全部挂载 */
         // // 将旧的一组子节点全部卸载 
         // n1.children.forEach(c => unmount(c))
         // // 再将新的一组子节点全部挂载到容器中 
-        // n2.children.forEach(c => patch(null, c, container))
+        // n2.children.forEach(c => patch(null, c, container))  
 
         const oldChildren = n1.children
         const newChildren = n2.children
-        // 旧的一组子节点的长度 
-        const oldLen = oldChildren.length
-        // 新的一组子节点的长度 
-        const newLen = newChildren.length
-        // 两组子节点的公共长度，即两者中较短的那一组子节点的长度 
-        const commonLength = Math.min(oldLen, newLen)
-        // 遍历 commonLength 次 
-        for (let i = 0; i < commonLength; i++) {
-          patch(oldChildren[i], newChildren[i], container)
-        }
-        // 如果 newLen > oldLen，说明有新子节点需要挂载 
-        if (newLen > oldLen) {
-          for (let i = commonLength; i < newLen; i++) {
-            patch(null, newChildren[i], container)
-          }
-        } else if (oldLen > newLen) {
-          // 如果 oldLen > newLen，说明有旧子节点需要卸载 
-          for (let i = commonLength; i < oldLen; i++) {
-            unmount(oldChildren[i])
+        // 遍历新的 children 
+        for (let i = 0; i < newChildren.length; i++) {
+          const newVNode = newChildren[i]
+          // 遍历旧的 children 
+          for (let j = 0; j < oldChildren.length; j++) {
+            const oldVNode = oldChildren[j]
+            // 如果找到了具有相同 key 值的两个节点，说明可以复用，但仍然需要调用 patch 函数更新 
+            if (newVNode.key === oldVNode.key) {
+              patch(oldVNode, newVNode, container)
+              break // 这里需要 break 
+            }
           }
         }
       } else {

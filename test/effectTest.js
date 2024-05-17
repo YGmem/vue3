@@ -15,12 +15,12 @@ export default function () {
   let proxyObj = reactive(obj)
 
   /* 函数内返回代理对象的响应 */
-  // effect(() => {
-  //   console.log(11111);
-  //  console.log(proxyObj.fn); 
-  // })
+  effect(() => {
+    debugger
+    console.log(proxyObj.fn)
+  })
 
-  // proxyObj.age = 1
+  proxyObj.age = 1
 
   /*  in 操作的响应 */
   // effect(() => {
@@ -103,5 +103,5 @@ export default function () {
   /* 实现map 和 set的响应收集 */
   let set = new Set([1, 2])
   let p = reactive(set)
-  console.log(p.size)
+  // console.log(p.size)
 }

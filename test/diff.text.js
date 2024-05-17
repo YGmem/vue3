@@ -6,9 +6,9 @@ let renderer = createRenderer(options)
 const oldVNode = {
   type: 'div',
   children: [
-    { type: 'p', children: '1' },
-    { type: 'div', children: '2' },
-    { type: 'h2', children: '3' },
+    { type: 'p', children: '1', key: "1" },
+    { type: 'div', children: '2', key: "2" },
+    { type: 'h2', children: '3', key: "3" },
   ]
 }
 
@@ -16,11 +16,11 @@ const oldVNode = {
 const newVNode = {
   type: 'div',
   children: [
-    { type: 'p', children: '4' },
-    { type: 'p', children: '7' },
-    { type: 'p', children: '5' },
-    { type: 'p', children: '6' },
-    { type: 'p', children: '6' },
+    { type: 'P', children: '4', key: "3" },
+    { type: 'p', children: '7', key: "1" },
+    { type: 'p', children: '5', key: "2" },
+    // { type: 'p', children: '6' },
+    // { type: 'p', children: '6' },
   ]
 }
 

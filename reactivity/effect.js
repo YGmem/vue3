@@ -46,6 +46,7 @@ export function track(target, key) {
 
 /* vue3 源码的trigger版本(差不多这个意思,不是完全一样) */
 export function trigger(target, key, type, newVal) {
+  console.log(bucket, target, key)
   const depsMap = bucket.get(target)
   if (!depsMap) return
   const effects = depsMap.get(key)
