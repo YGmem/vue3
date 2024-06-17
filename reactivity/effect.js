@@ -55,7 +55,7 @@ export function trigger(target, key, type, newVal) {
   const deps = [] // 存储副作用Set数据
 
   deps.push(effects)
-
+  console.log(deps)
   // 将删除和添加操作也进行副作用执行
   if (
     type === ProxyType.DELETE ||
@@ -111,6 +111,8 @@ export function trigger(target, key, type, newVal) {
   })
 
 }
+console.log('🚀 ~ trigger ~ deps:', deps)
+console.log('🚀 ~ trigger ~ deps:', deps)
 
 
 /* vue设计与实现的trigger版本 */
