@@ -14,7 +14,7 @@ import reactiveText from './test/reactive.text.js'
 // import './test/mapSetProxy.text.js' // 代理实现
 // import './test/ref.text.js' // 简单diff算法
 
-//  测试提交触发tc -2
+//  测试提交触发tc -2 -3
 import './test/diff.text.js'
 
 
