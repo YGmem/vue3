@@ -55,7 +55,7 @@ object HelloBuildBasic : BuildType({
 
     steps {
         script {
-            name = "01_echo_context"
+            name = "01_echo_context_bj"
             id = "build001"
             scriptContent = """
                 echo "TeamCity project id: %teamcity.project.id%"
@@ -264,8 +264,8 @@ object HelloCommonTemplate : Template({
     description = "测试模板"
 
     params {
-        param("system.demo.mode", "template-mode")
         param("build.env", "dev")
+        param("system.demo.mode", "template-mode")
         param("env.DEMO_GREETING", "hello-from-template")
     }
 
